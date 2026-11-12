@@ -1,14 +1,13 @@
-# Networkwalks-cybersecurity-lab-wk2
 # 🛡️ Week 2 Security Assessment Report
 
 ### 🔍 Footprinting and Local Network Discovery
 
-**Networkwalks Internship | Prepared by [YOUR NAME]**
+**Networkwalks Internship | Prepared by Frank-Nnokwe Raymond Chigemezu**
 
 | Item | Detail |
 | ---- | ------ |
-| **👤 Author** | [FRANK-NNOKWE RAYMOND CHIGEMEZU] |
-| **📅 Date** | [12 Nov 2026] |
+| **👤 Author** | Frank-Nnokwe Raymond Chigemezu |
+| **📅 Date** | 12 Nov 2026 |
 | **📦 Modules** | W2-PM1 (Footprinting) and W2-PM5 (Network scanning with Zenmap) |
 | **🎯 Targets** | `networkwalks.com` (public information only) and my own home Wi-Fi network |
 | **🔐 Scope** | Only the assigned domain and a network I own were examined. No exploitation was attempted. |
@@ -31,7 +30,7 @@ This report covers two practical modules from Week 2 of the Networkwalks interns
 
 The first module looks at a target from the outside. The second turns inward and maps a network I control. Together they show the first steps of an assessment: collect public information, then identify what is reachable.
 
-**Environment:** The footprinting commands ran on Kali Linux in VirtualBox. The network scan ran from [Windows / Kali / other: command prompt(CMD)]. Each activity below lists the command, what came back, the evidence screenshot, and why a defender should care.
+**Environment:** The footprinting commands ran on Kali Linux in VirtualBox. The network scan ran on Windows, using Command Prompt (CMD) and Zenmap. Each activity below lists the command, what came back, the evidence screenshot, and why a defender should care.
 
 ---
 
@@ -47,7 +46,6 @@ The first module looks at a target from the outside. The second turns inward and
 | 🧱 `wafw00f` | Check whether a web application firewall sits in front |
 | 🗂️ `dnsrecon` | Pull DNS records for the domain |
 | 🗺️ Zenmap | Discover hosts on my local network |
-| 📸 [Your screenshot tool] | Capture evidence |
 
 ---
 
@@ -61,96 +59,115 @@ I started broad and narrowed down: who owns the domain, what it runs on, where i
 
 **Command:** `whois networkwalks.com`
 
-**What I found:** [Registrar: GoDaddy.com, LLC
-Created: 2019-11-06, last updated: 2025-11-12, expires: 2027-11-06
-Name servers: NS6135.HOSTGATOR.COM and NS6136.HOSTGATOR.COM, so the site is hosted at HostGator
-DNSSEC: unsigned
-Domain status locks: clientDeleteProhibited, clientRenewProhibited, clientTransferProhibited and clientUpdateProhibited (these protect against unauthorised transfer or changes)
-Registrant details: not shown (privacy-protected)]
+**What I found:**
 
-📸 *Evidence:* [!<img width="586" height="454" alt="whois" src="https://github.com/user-attachments/assets/fac29550-f93f-4abe-960b-0b88574fd8a2" />]
+- **Registrar:** GoDaddy.com, LLC
+- **Dates:** created 2019-11-06, last updated 2025-11-12, expires 2027-11-06
+- **Name servers:** NS6135.HOSTGATOR.COM and NS6136.HOSTGATOR.COM, so the site is hosted at HostGator
+- **DNSSEC:** unsigned
+- **Status locks:** clientDeleteProhibited, clientRenewProhibited, clientTransferProhibited and clientUpdateProhibited (these protect against unauthorised transfer or changes)
+- **Registrant details:** not shown (privacy-protected)
 
+📸 *Evidence:*
 
-🎯 *Why it matters:* [From an attacker's view, e.g. registration data can reveal who runs the domain and which providers it relies on.]
-🛡️ *Defender's takeaway:* [ privacy protection limits what is exposed.]
+![WHOIS output](https://github.com/user-attachments/assets/fac29550-f93f-4abe-960b-0b88574fd8a2)
+
+🎯 *Why it matters:* Registration data can reveal who runs a domain and which providers it relies on.
+🛡️ *Defender's takeaway:* Privacy protection and transfer locks limit what is exposed and guard against hijacking.
 
 ### 4.1.2 🧩 WhatWeb: website technologies
 
 **Command:** `whatweb networkwalks.com`
 
-**What I found:** [Web server: Apache
-CMS: WordPress 7.1.4 with WordPress Download Manager 3.3.76 (from the MetaGenerator output)
-Front-end: jQuery 3.7.1, Bootstrap, HTML5, Google Tag Manager
-IP address: 192.232.216.135 (United States)
-Redirect: http://networkwalks.com returns 301 Moved Permanently to https://
-Other details: HttpOnly cookie __wpdm_client, contact email info@networkwalks.com, page title "Networkwalks Academy"]
+**What I found:**
 
-📸 *Evidence:* ![<img width="960" height="323" alt="whatweb" src="https://github.com/user-attachments/assets/2a87fdf8-1580-4622-a794-e71b25bb01a1" />]
+- **Web server:** Apache
+- **CMS:** WordPress 7.1.4 with WordPress Download Manager 3.3.76 (from the MetaGenerator output)
+- **Front-end:** jQuery 3.7.1, Bootstrap, HTML5, Google Tag Manager
+- **IP address:** 192.232.216.135 (United States)
+- **Redirect:** `http://networkwalks.com` returns 301 Moved Permanently to `https://`
+- **Other details:** HttpOnly cookie `__wpdm_client`, contact email info@networkwalks.com, page title "Networkwalks Academy"
 
+📸 *Evidence:*
 
-🎯 *Why it matters:* [Visible technology and version details help an attacker look for known weaknesses.
-DNS server used: 8.8.8.8 (Google), non-authoritative answer
-Result: networkwalks.com resolves to 192.232.216.135, which matches the IP found by WhatWeb]
+![WhatWeb output](https://github.com/user-attachments/assets/2a87fdf8-1580-4622-a794-e71b25bb01a1)
+
+🎯 *Why it matters:* Visible technology and version details help an attacker look for known weaknesses.
+🛡️ *Defender's takeaway:* Keep the CMS and plugins updated and avoid advertising exact versions.
 
 ### 4.1.3 🔎 nslookup: name resolution
 
 **Command:** `nslookup networkwalks.com`
 
-**What I found:** [IP addresses returned, and anything notable about them, such as a CDN or shared hosting.]
+**What I found:**
 
-📸 *Evidence:* ![<img width="955" height="346" alt="nslookup" src="https://github.com/user-attachments/assets/4d3b3679-989f-434e-82ae-4a2ae8437611" />]
+- **DNS server used:** 8.8.8.8 (Google), with a non-authoritative answer
+- **Result:** `networkwalks.com` resolves to 192.232.216.135, which matches the IP found by WhatWeb
 
+📸 *Evidence:*
 
-🎯 *Why it matters:* [the IP address gives the network location of the web service and is the starting point for scanning.]
+![nslookup output](https://github.com/user-attachments/assets/4d3b3679-989f-434e-82ae-4a2ae8437611)
 
+🎯 *Why it matters:* The IP address gives the network location of the web service and is the starting point for scanning.
+🛡️ *Defender's takeaway:* The address is public by design, so protection has to come from the services behind it.
 
 ### 4.1.4 📨 curl: HTTP headers
 
 **Command:** `curl -I https://networkwalks.com`
 
-**What I found:** [Status code, server header, security headers present or missing, redirects.
-Status: HTTP/2 200, server: Apache
-Caching headers: x-nginx-cache: WordPress, x-endurance-cache-level: 0
-Cookie: __wpdm_client set with the Secure and HttpOnly flags (good practice)
-Present headers: permissions-policy, referrer-policy: no-referrer-when-downgrade
-Exposed endpoint: Link headers reveal the WordPress REST API at /wp-json/
-Missing security headers: Strict-Transport-Security (HSTS), X-Frame-Options, X-Content-Type-Options, Content-Security-Policy]
+**What I found:**
 
-📸 *Evidence:* ![<img width="960" height="346" alt="curl -I" src="https://github.com/user-attachments/assets/d68dbb24-5e7b-4fbe-93e9-f6caa40d150b" />]
+- **Status:** HTTP/2 200, server: Apache
+- **Caching headers:** `x-nginx-cache: WordPress`, `x-endurance-cache-level: 0`
+- **Cookie:** `__wpdm_client` set with the Secure and HttpOnly flags (good practice)
+- **Present headers:** `permissions-policy`, `referrer-policy: no-referrer-when-downgrade`
+- **Exposed endpoint:** Link headers reveal the WordPress REST API at `/wp-json/`
+- **Missing security headers:** Strict-Transport-Security (HSTS), X-Frame-Options, X-Content-Type-Options, Content-Security-Policy
 
+📸 *Evidence:*
 
-🎯 *Why it matters:* [the missing headers show where browser-side protection is weak, and the Link and Server headers confirm the technology stack.]
+![curl -I output](https://github.com/user-attachments/assets/d68dbb24-5e7b-4fbe-93e9-f6caa40d150b)
+
+🎯 *Why it matters:* The missing headers show where browser-side protection is weak, and the Link and Server headers confirm the technology stack.
+🛡️ *Defender's takeaway:* Adding the missing headers is a low-effort improvement.
 
 ### 4.1.5 🧱 wafw00f: firewall detection
 
 **Command:** `wafw00f https://networkwalks.com`
 
-**What I found:** [Result: the site is behind ModSecurity (SpiderLabs) WAF, detected in 2 requests (wafw00f v2.4.2)
-My first attempt timed out because of a slow connection. The second attempt succeeded..]
+**What I found:**
 
-📸 *Evidence:* ![<img width="936" height="358" alt="wafw00f" src="https://github.com/user-attachments/assets/42d11dcc-5b8e-43bf-b2ee-8dd53787f764" />]
+- **Result:** the site is behind a ModSecurity (SpiderLabs) WAF, detected in 2 requests (wafw00f v2.4.2)
+- **Note:** my first attempt timed out because of a slow connection; the second attempt succeeded
 
+📸 *Evidence:*
 
-🎯 *Why it matters:* [knowing the WAF lets an attacker choose evasion techniques or look for ways around it.]
+![wafw00f output](https://github.com/user-attachments/assets/42d11dcc-5b8e-43bf-b2ee-8dd53787f764)
+
+🎯 *Why it matters:* Knowing the WAF lets an attacker choose evasion techniques or look for ways around it.
+🛡️ *Defender's takeaway:* A WAF is a good control, but it should not be the only layer.
 
 ### 4.1.6 🗂️ dnsrecon: DNS records
 
 **Command:** `dnsrecon -d networkwalks.com`
 
-**What I found:** [Record types seen (A, MX, NS, TXT, SOA), mail provider, any sub-domains or SPF/DMARC details.They are as follows:
-SOA / NS: ns6135.hostgator.com (50.87.144.87) and ns6136.hostgator.com (192.232.216.131)
-A record: networkwalks.com → 192.232.216.135
-MX record: mail.networkwalks.com → 192.232.216.135 (web and mail share the same server)
-SPF (TXT): v=spf1 +a +mx +ip4:50.87.144.87 +include:websitewelcome.com ~all (uses a softfail, ~all)
-TXT: a Google site-verification record
-SRV: 8 _autodiscover._tcp records pointing to cpanelemaildiscovery.cpanel.net, which shows the host uses cPanel
-DNSSEC: no answer to the DNSSEC query, which matches the unsigned status in WHOIS
-BIND version: both name servers disclose version 9.16.23-RH]
+**What I found:**
 
-📸 *Evidence:* ![<img width="899" height="225" alt="dnsrecon" src="https://github.com/user-attachments/assets/512356a8-c3d5-4189-a959-4b1100f524dc" />]
+- **SOA / NS:** ns6135.hostgator.com (50.87.144.87) and ns6136.hostgator.com (192.232.216.131)
+- **A record:** `networkwalks.com` → 192.232.216.135
+- **MX record:** `mail.networkwalks.com` → 192.232.216.135 (web and mail share the same server)
+- **SPF (TXT):** `v=spf1 +a +mx +ip4:50.87.144.87 +include:websitewelcome.com ~all` (uses a softfail, `~all`)
+- **TXT:** a Google site-verification record
+- **SRV:** 8 `_autodiscover._tcp` records pointing to `cpanelemaildiscovery.cpanel.net`, which shows the host uses cPanel
+- **DNSSEC:** no answer to the DNSSEC query, which matches the unsigned status in WHOIS
+- **BIND version:** both name servers disclose version 9.16.23-RH
 
+📸 *Evidence:*
 
-🎯 *Why it matters:* [the records map the infrastructure, the exposed software version helps targeting, and the softfail SPF policy makes spoofed emails easier.]
+![dnsrecon output](https://github.com/user-attachments/assets/512356a8-c3d5-4189-a959-4b1100f524dc)
+
+🎯 *Why it matters:* The records map the infrastructure, the exposed software version helps targeting, and the softfail SPF policy makes spoofed emails easier.
+🛡️ *Defender's takeaway:* Tighten the SPF policy and hide DNS software versions where possible.
 
 ---
 
@@ -160,20 +177,25 @@ This part was done on my own Wi-Fi network only.
 
 | Step | Action | My result |
 | ---- | ------ | --------- |
-| 1️⃣ | Installed or opened Zenmap | [✅ version] |
-| 2️⃣ | Found my IP, subnet mask and gateway (`ipconfig` or `ip a`) | [IP / mask / gateway] |
-| 3️⃣ | Worked out the CIDR range to scan | [e.g. x.x.x.0/24] |
-| 4️⃣ | Ran a ping scan across that range | [nmap -sn 10.248.50.54/24] |
-| 5️⃣ | Counted the hosts that were up | [2 hosts] |
-| 6️⃣ | Listed the IP addresses found | [10.248.50.164 & 10.248.50.54] |
-| 7️⃣ | Listed the MAC addresses and vendors | [6E:D8:5C:F3:8E:B6] |
-| 8️⃣ | Exported the topology view | [ 📎 **Export:** ![zenmap_topology.pdf](screenshots/zenmap_topology.pdf)] |
+| 1️⃣ | Installed or opened Zenmap | ✅ Zenmap opened and ready |
+| 2️⃣ | Found my IP, subnet mask and gateway (`ipconfig`) | ✏️ IP: 10.248.50.54, mask: [255.255.255.0], gateway: [ 10.248.50.164] |
+| 3️⃣ | Worked out the CIDR range to scan | 10.248.50.0/24 |
+| 4️⃣ | Ran a ping scan across that range | `nmap -sn 10.248.50.54/24` |
+| 5️⃣ | Counted the hosts that were up | 2 hosts |
+| 6️⃣ | Listed the IP addresses found | 10.248.50.164 and 10.248.50.54 |
+| 7️⃣ | Listed the MAC addresses and vendors | 6E:D8:5C:F3:8E:B6 |
+| 8️⃣ | Exported the topology view | ✅ [`zenmap_topology.pdf`](screenshots/zenmap_topology.pdf) |
 
-**Scan summary line from Zenmap:** "[256 IP addresses (2 hosts up) scanned in 6.09 seconds]"
+**Scan summary line from Zenmap:** "256 IP addresses (2 hosts up) scanned in 6.09 seconds"
 
-**Observations:** [Anything you noticed: unknown devices, randomised MAC addresses, devices you could not identify, why your own machine's MAC came from a different command.]
+**Observations:** ✏️ [Add one or two sentences: which of the two devices is yours and which is the other, why only one MAC address was listed, and whether the MAC looks randomised.]
 
-📸 *Evidence:* 📎 **Export:** [`zenmap_topology.pdf`](screenshots/zenmap_topology.pdf)]
+📸 *Evidence:*
+
+📎 **Export:** [`zenmap_topology.pdf`](screenshots/zenmap_topology.pdf)
+
+✏️ *To add:* <img width="476" height="400" alt="zenmapscreenshot" src="https://github.com/user-attachments/assets/54ba53e3-3283-4529-b481-0182e412ee4b" />
+.
 
 ---
 
@@ -181,12 +203,11 @@ This part was done on my own Wi-Fi network only.
 
 | Problem | Cause | How I fixed it |
 | ------- | ----- | -------------- |
-| [nslookup and wafw00f timed out] | [due to unstable network] | [i go a stable wifi connection then repeated the commands and they worked] |
-| [whatweb command didn't work at first] | [due to i misspelled whatweb as whatwed] | [i corrected myself] |
-
-*(Only list problems you actually hit. An honest log is worth more than a long one.)*
+| `nslookup` and `wafw00f` timed out | Unstable network connection | I switched to a stable Wi-Fi connection and repeated the commands, and they worked |
+| `whatweb` did not work at first | I misspelled the command as `whatwed` | I corrected the spelling and ran it again |
 
 ---
+
 ## ⚠️ 5. Risk Assessment
 
 The table below records what I noticed during testing, with a rough rating of how useful each item could be to an attacker.
@@ -201,7 +222,7 @@ The table below records what I noticed during testing, with a rough rating of ho
 | 6 | DNS server software version disclosed | The name servers reported BIND 9.16.23-RH | Attackers can look for flaws tied to that specific version | 🟢 Low |
 | 7 | Hosting provider easy to identify | HostGator, cPanel and the server IP appeared in WHOIS and DNS results | Shows where and how the site is hosted | 🟢 Low |
 | 8 | Firewall product identifiable | wafw00f detected ModSecurity | An attacker learns which filter to work around, although having a WAF is still a good control | 🟢 Low |
-| 9 | Devices on my network easy to discover | The Zenmap ping scan listed every live device with its IP and MAC address (my result: [number] devices) | Any device on a network can be found this way, which also lets defenders spot unknown ones | 🟢 Low |
+| 9 | Devices on my network easy to discover | The Zenmap ping scan listed every live device with its IP and MAC details (my result: 2 devices) | Any device on a network can be found this way, which also lets defenders spot unknown ones | 🟢 Low |
 
 **Rating key:** 🔴 Critical  🟠 High  🟡 Medium  🟢 Low
 
@@ -211,45 +232,39 @@ The table below records what I noticed during testing, with a rough rating of ho
 
 ## ✅ 6. Recommendations
 
-1. [🔎 Review publicly exposed technology information Regularly review what information about the web server, CMS and plugins is publicly visible.
-]
-2. [🧾 Add missing HTTP security headers Enable HSTS, X-Frame-Options, X-Content-Type-Options and a Content-Security-Policy, and review which headers expose unnecessary technical detail.
-]
-3. [✉️ Strengthen the SPF policy Move from softfail (~all) to a hard fail (-all) once all legitimate senders are covered, and consider adding DKIM and DMARC.
-]
-4. Keep software and server versions out of public banners where possible.
-5. Review DNS records regularly and remove anything unused.
-6. Secure home networks with strong Wi-Fi passwords and check for unknown devices.
-7. Run reconnaissance and scanning only where you have permission.
+1. 🔎 **Review publicly exposed technology information:** regularly check what the web server, CMS and plugins reveal publicly, and keep them updated.
+2. 🧾 **Add missing HTTP security headers:** enable HSTS, X-Frame-Options, X-Content-Type-Options and a Content-Security-Policy, and review which headers expose unnecessary technical detail.
+3. ✉️ **Strengthen the SPF policy:** move from softfail (`~all`) to a hard fail (`-all`) once all legitimate senders are covered, and consider adding DKIM and DMARC.
+4. 🙈 **Keep software and server versions out of public banners where possible.**
+5. 🌐 **Review DNS records regularly** and remove anything unused.
+6. 📶 **Secure home networks** with a strong Wi-Fi password and check for unknown devices.
+7. ⚖️ **Run reconnaissance and scanning only where you have permission.**
 
 ---
 
 ## 🏁 7. Conclusion
 
-[Week 2 showed me how much can be learned about a system before anyone tries to attack it. Using six Kali Linux tools, I put together a profile of `networkwalks.com` without ever breaking in: who registered the domain, where it is hosted, which software it runs, whether a firewall sits in front of it, and how its DNS and email are configured. Each tool added one more piece, and none of the pieces looked serious alone, but together they gave a clear picture of the target.
+Week 2 showed me how much can be learned about a system before anyone tries to attack it. Using six Kali Linux tools, I put together a profile of `networkwalks.com` without ever breaking in: who registered the domain, where it is hosted, which software it runs, whether a firewall sits in front of it, and how its DNS and email are configured. Each tool added one more piece, and none of the pieces looked serious alone, but together they gave a clear picture of the target.
 
 The Zenmap exercise turned the same thinking inward. I scanned my own Wi-Fi network, found every live device, and exported the topology. It was surprising how quickly a small home network gave up its devices, and it made a strong case for defenders running the same scan on themselves so they can spot anything that doesn't belong.
 
-I also learned that results only matter if they are recorded properly: the command, the output, what it means, the risk, and the fix. Finally, this work reminded me that tools like these belong only on systems I have permission to test. Along the way I ran into a few problems which i had already listed above in the problems section, and fixing them taught me to read error messages carefully instead of guessing.]
+I also learned that results only matter if they are recorded properly: the command, the output, what it means, the risk, and the fix. Finally, this work reminded me that tools like these belong only on systems I have permission to test. Along the way I ran into a few problems, which are listed in the problems section above, and fixing them taught me to read error messages carefully instead of guessing.
 
 ---
 
-## 📸 8. Evidence
+## 📸 8. Evidence Index
 
-*Screenshots are in the `screenshots/` folder, in the order they appear above.*
+Each screenshot is shown under its activity in section 4. This table lists where to find them.
 
-### 🔍 Footprinting
-![whois](screenshots/1_whois.png)
-![whatweb](screenshots/2_whatweb.png)
-![nslookup](screenshots/3_nslookup.png)
-![curl headers](screenshots/4_curl_headers.png)
-![wafw00f](screenshots/5_wafw00f.png)
-![dnsrecon](screenshots/6_dnsrecon.png)
-
-### 🗺️ Zenmap
-![scan](screenshots/7_zenmap_scan.png)
-![hosts](screenshots/8_zenmap_hosts.png)
-![topology](screenshots/9_zenmap_topology.png)
+| # | Evidence | Tool | Shown in |
+| - | -------- | ---- | -------- |
+| 1 | WHOIS output | `whois` | 4.1.1 |
+| 2 | WhatWeb output | `whatweb` | 4.1.2 |
+| 3 | nslookup output | `nslookup` | 4.1.3 |
+| 4 | HTTP headers | `curl -I` | 4.1.4 |
+| 5 | Firewall detection | `wafw00f` | 4.1.5 |
+| 6 | DNS records | `dnsrecon` | 4.1.6 |
+| 7 | Topology export | Zenmap | 4.2 ([PDF](screenshots/zenmap_topology.pdf)) |
 
 ---
 
