@@ -196,7 +196,6 @@ This part was done on my own Wi-Fi network only.
 
 ✏️ *To add:* <img width="476" height="400" alt="zenmapscreenshot" src="https://github.com/user-attachments/assets/54ba53e3-3283-4529-b481-0182e412ee4b" />
 .
-
 ---
 
 ## 🧯 4.3 Problems I Ran Into
